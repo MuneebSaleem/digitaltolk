@@ -8,6 +8,7 @@ use DTApi\Models\Language;
 use DTApi\Models\UserMeta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class TeHelper
 {
@@ -61,6 +62,49 @@ class TeHelper
         return $time->format('Y-m-d H:i:s');
 
     }
+
+
+
+    public function testWillExpireAtWithin90Minutes()
+    {
+        $dueTime = '2024-02-22 12:00:00';
+        $createdAt = '2024-02-22 10:30:00';
+
+        $expireAt = Carbon::willExpireAt($dueTime, $createdAt);
+
+        $this->assertEquals('2024-02-22 12:00:00', $expireAt);
+    }
+
+    public function testWillExpireAtWithin24Hours()
+    {
+        $dueTime = '2024-02-22 12:00:00';
+        $createdAt = '2024-02-21 22:00:00';
+
+        $expireAt = Carbon::willExpireAt($dueTime, $createdAt);
+
+        $this->assertEquals('2024-02-22 11:30:00', $expireAt);
+    }
+
+    public function testWillExpireAtWithin72Hours()
+    {
+        $dueTime = '2024-02-24 12:00:00';
+        $createdAt = '2024-02-21 08:00:00';
+
+        $expireAt = Carbon::willExpireAt($dueTime, $createdAt);
+
+        $this->assertEquals('2024-02-23 00:00:00', $expireAt);
+    }
+
+    public function testWillExpireAtMoreThan72Hours()
+    {
+        $dueTime = '2024-02-27 12:00:00';
+        $createdAt = '2024-02-20 12:00:00';
+
+        $expireAt = Carbon::willExpireAt($dueTime, $createdAt);
+
+        $this->assertEquals('2024-02-25 12:00:00', $expireAt);
+    }
+
 
 }
 
